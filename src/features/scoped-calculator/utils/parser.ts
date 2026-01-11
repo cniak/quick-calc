@@ -1,5 +1,3 @@
-import type { VariableLine } from '@/features/scoped-calculator/state/types';
-
 // Parse a line: detect assignments vs expressions
 export function parseLine(expression: string): { name: string | null; expr: string } {
   const trimmed = expression.trim();

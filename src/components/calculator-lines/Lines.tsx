@@ -101,7 +101,7 @@ function Line({
     functionSets,
     inputRefObj,
     line.expression,
-    (newValue, startPos, endPos) => {
+    (newValue, _startPos, endPos) => {
       // Format the value and adjust cursor position
       const formatted = formatExpression(newValue);
       const cursorAdjustment = formatted.length - newValue.length;

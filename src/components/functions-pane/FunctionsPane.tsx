@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useCalculatorStore } from '@/state/store';
-import { Plus, Trash2, Terminal, FileText } from 'lucide-react';
+import { Trash2, Terminal, FileText } from 'lucide-react';
 import { CodeEditor } from '@/components/code-editor/CodeEditor';
 import { ConfirmationDialog } from '@/components/confirmation-dialog/ConfirmationDialog';
 
