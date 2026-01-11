@@ -305,7 +305,7 @@ export function CalculatorLines() {
     if (e.key === 'Enter') {
       e.preventDefault();
       // Insert a new line below the current one
-      addLine(activeScope.id, '');
+      addLine(activeScope.id, '', idx + 1);
       // Focus on the newly added line after a short delay
       setTimeout(() => {
         inputRefs.current[idx + 1]?.focus();

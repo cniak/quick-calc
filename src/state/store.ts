@@ -19,7 +19,7 @@ interface CalculatorState {
   undo: (scopeId: string) => void;
   
   // Lines
-  addLine: (scopeId: string, expression: string) => void;
+  addLine: (scopeId: string, expression: string, index?: number) => void;
   updateLine: (scopeId: string, lineIndex: number, expression: string) => void;
   deleteLine: (scopeId: string, lineIndex: number) => void;
   
@@ -114,7 +114,7 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
     get().recomputeScope(scopeId);
   },
   
-  addLine: (scopeId, expression) => {
+  addLine: (scopeId, expression, index) => {
     // Save current state to history
     const currentScope = get().scopes.find(s => s.id === scopeId);
     if (currentScope) {
@@ -129,7 +129,7 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
       
       const { name, expr } = parseLine(expression);
       const newLine: VariableLine = {
-        lineIndex: scope.variables.length,
+        lineIndex: 0, // Will be updated below
         name,
         expression: expression.trim(), // Store full expression for display
         value: null,
@@ -137,9 +137,17 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
         dependsOn: extractDependencies(expr),
       };
       
+      // Insert at specified index, or append to end if not specified
+      const insertIndex = index !== undefined ? index : scope.variables.length;
+      const variables = [
+        ...scope.variables.slice(0, insertIndex),
+        newLine,
+        ...scope.variables.slice(insertIndex)
+      ].map((line, idx) => ({ ...line, lineIndex: idx }));
+      
       return {
         ...scope,
-        variables: [...scope.variables, newLine],
+        variables,
         updatedAt: new Date().toISOString(),
       };
     });

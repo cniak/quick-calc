@@ -8,7 +8,7 @@ import { CommandPalette } from '@/components/command-palette/CommandPalette';
 const FUNCTIONS_HEIGHT_KEY = 'calculator-v2-functions-height';
 
 function App() {
-  const { loadScopes, createScope } = useCalculatorStore();
+  const { scopes, activeScopeId, loadScopes, createScope } = useCalculatorStore();
   const initialized = useRef(false);
   const [functionsHeight, setFunctionsHeight] = useState(() => {
     const saved = localStorage.getItem(FUNCTIONS_HEIGHT_KEY);
@@ -17,6 +17,16 @@ function App() {
   const [isDragging, setIsDragging] = useState(false);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Update document title based on active scope
+  useEffect(() => {
+    const activeScope = scopes.find(s => s.id === activeScopeId);
+    if (activeScope) {
+      document.title = `@calc / ${activeScope.name}`;
+    } else {
+      document.title = 'Quick Calculator';
+    }
+  }, [scopes, activeScopeId]);
   
   useEffect(() => {
     if (!initialized.current) {

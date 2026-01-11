@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <!-- Background with dark gradient -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Angular calculator body -->
+  <rect width="256" height="256" rx="24" fill="url(#bg)"/>
+  
+  <!-- Display screen at top -->
+  <rect x="32" y="32" width="192" height="56" rx="6" fill="#0f172a" stroke="#60a5fa" stroke-width="2"/>
+  
+  <!-- Display text -->
+  <text x="212" y="70" font-family="monospace" font-size="24" font-weight="bold" fill="#60a5fa" text-anchor="end">3.14159(...)</text>
+  
+  <!-- Calculator buttons grid (4x3) -->
+  <!-- Row 1 -->
+  <rect x="32" y="108" width="40" height="32" rx="4" fill="#60a5fa" opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="52" y="129" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa" text-anchor="middle">+</text>
+  
+  <rect x="82" y="108" width="40" height="32" rx="4" fill="#60a5fa" opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="102" y="129" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa" text-anchor="middle">-</text>
+  
+  <rect x="132" y="108" width="40" height="32" rx="4" fill="#60a5fa" opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="152" y="129" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa" text-anchor="middle">×</text>
+  
+  <rect x="182" y="108" width="42" height="32" rx="4" fill="#60a5fa" opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="203" y="129" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa" text-anchor="middle">÷</text>
+  
+  <!-- Row 2 -->
+  <rect x="32" y="150" width="40" height="32" rx="4" fill="#60a5fa" opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="52" y="171" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa" text-anchor="middle">@</text>
+  
+  <rect x="82" y="150" width="40" height="32" rx="4" fill="#60a5fa" opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="102" y="171" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa" text-anchor="middle">%</text>
+  
+  <rect x="132" y="150" width="40" height="32" rx="4" fill="#60a5fa" opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="152" y="171" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa" text-anchor="middle">(</text>
+  
+  <rect x="182" y="150" width="42" height="32" rx="4" fill="#60a5fa" opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="203" y="171" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa" text-anchor="middle">)</text>
+  
+  <!-- Row 3 -->
+  <rect x="32" y="192" width="40" height="32" rx="4" fill="#60a5fa" opacity="0.4"/>
+  <text x="52" y="213" font-family="monospace" font-size="14" font-weight="bold" fill="#0f172a" text-anchor="middle">js</text>
+  
+  <rect x="82" y="192" width="40" height="32" rx="4" fill="#60a5fa" opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="102" y="213" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa" text-anchor="middle">^</text>
+  
+  <rect x="132" y="192" width="40" height="32" rx="4" fill="#60a5fa" opacity="0.15" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="152" y="213" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa" text-anchor="middle">√</text>
+  
+  <!-- Bottom right: equals button (highlighted) -->
+  <rect x="182" y="192" width="42" height="32" rx="4" fill="#60a5fa" opacity="0.5" stroke="#60a5fa" stroke-width="2"/>
+  <text x="203" y="213" font-family="monospace" font-size="20" font-weight="bold" fill="#0f172a" text-anchor="middle">=</text>
+</svg>

@@ -45,6 +45,22 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
     }
   }, [isOpen]);
 
+  // Handle escape key globally to close command palette
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !confirmDialog.isOpen) {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscape, true);
+    return () => window.removeEventListener('keydown', handleEscape, true);
+  }, [isOpen, confirmDialog.isOpen, onClose]);
+
   // Parse query for prefix commands
   const getCommandMode = (q: string): { mode: 'open' | 'delete' | 'add' | null; searchTerm: string } => {
     if (q.startsWith('@')) return { mode: 'open', searchTerm: q.slice(1) };
@@ -160,6 +176,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
         e.preventDefault();
         setIsCreating(false);
         setNewName('');
+        setTimeout(() => inputRef.current?.focus(), 0);
       }
       return;
     }
@@ -175,6 +192,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
       handleSelect(filteredItems[selectedIndex]);
     } else if (e.key === 'Escape') {
       e.preventDefault();
+      e.stopPropagation();
       onClose();
     }
   };
