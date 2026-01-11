@@ -1,14 +1,13 @@
 // Storage types
-export interface Scope {
+export type Scope = {
   id: string;
   name: string;
   variables: VariableLine[];
-  functions: FunctionDef[];
   createdAt: string;
   updatedAt: string;
 }
 
-export interface VariableLine {
+export type VariableLine = {
   lineIndex: number;
   name: string | null;
   expression: string;
@@ -17,15 +16,25 @@ export interface VariableLine {
   dependsOn: string[];
 }
 
-export interface FunctionDef {
+export type FunctionSet = {
+  id: string;
+  name: string; // The namespace/set name (e.g., 'f', 'math', 'utils')
+  code: string; // Contains multiple function definitions
+  isSaved: boolean;
+  colorTag: string;
+  createdAt: string;
+}
+
+export type FunctionDef = {
   name: string;
   code: string;
   isSaved: boolean;
   isCollapsed: boolean;
   colorTag: string;
+  scope: 'global' | string; // 'global' or specific scope ID
 }
 
-export interface EvaluationResult {
+export type EvaluationResult = {
   lineIndex: number;
   output: number | string | boolean | null;
   error: string | null;

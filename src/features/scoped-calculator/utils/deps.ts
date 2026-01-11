@@ -1,4 +1,4 @@
-import { VariableLine } from '../state/types';
+import type { VariableLine } from '@/features/scoped-calculator/state/types';
 import { extractDependencies } from './parser';
 
 // Build dependency graph and detect cycles
