@@ -31,11 +31,12 @@ export function Autocomplete({ show, position, items, selectedIndex, onSelect, o
   return (
     <div
       ref={ref}
-      className="fixed z-50 bg-secondary border border-border rounded shadow-lg max-h-48 overflow-y-auto"
+      className="fixed z-50 border border-border rounded shadow-lg max-h-48 overflow-y-auto"
       style={{
         top: `${position.top}px`,
         left: `${position.left}px`,
         minWidth: '200px',
+        backgroundColor: 'hsl(217 19% 11%)', // Solid background matching app background
       }}
     >
       {items.map((item, idx) => (
@@ -44,8 +45,9 @@ export function Autocomplete({ show, position, items, selectedIndex, onSelect, o
           className={`px-3 py-1.5 cursor-pointer font-mono text-sm ${
             idx === selectedIndex 
               ? 'bg-blue-500 text-white font-semibold' 
-              : 'hover:bg-accent/50 text-foreground'
+              : 'hover:bg-accent text-foreground'
           }`}
+          style={idx !== selectedIndex ? { backgroundColor: 'hsl(217 19% 11%)' } : undefined}
           onClick={() => onSelect(item)}
         >
           {item}

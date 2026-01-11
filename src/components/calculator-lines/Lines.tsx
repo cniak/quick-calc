@@ -408,7 +408,7 @@ export function CalculatorLines() {
         
         {/* Summary line showing total sum */}
         {hasContent && (
-          <div className="flex items-center gap-2 py-2 mt-4 pl-4">
+          <div className="flex items-center gap-2 py-2 mt-4 pl-4 relative z-0">
             <span className="text-muted-foreground/30 font-medium">total =</span>
             <span className="text-sm font-semibold px-2 py-0.5 rounded text-muted-foreground/80 bg-muted/30">
               {formatNumber(totalSum)}
