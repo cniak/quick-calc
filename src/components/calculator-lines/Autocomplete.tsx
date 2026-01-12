@@ -86,6 +86,28 @@ export function useAutocomplete(
     userClosed: false,
   });
   
+  // Reset userClosed flag when user starts typing (not navigating or deleting)
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Close autocomplete on Backspace or Delete
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        if (state.show) {
+          setState(prev => ({ ...prev, show: false, userClosed: true }));
+        }
+      }
+      // Only reset on actual typing keys (not arrow keys, Escape, etc.)
+      else if (state.userClosed && e.key.length === 1) {
+        setState(prev => ({ ...prev, userClosed: false }));
+      }
+    };
+    
+    input.addEventListener('keydown', handleKeyDown);
+    return () => input.removeEventListener('keydown', handleKeyDown);
+  }, [state.userClosed, state.show, inputRef]);
+  
   // Extract functions from a function set code
   const extractFunctions = (code: string): string[] => {
     const functionRegex = /function\s+(\w+)\s*\(/g;
@@ -109,7 +131,7 @@ export function useAutocomplete(
     // Close autocomplete if input is empty
     if (!textBeforeCursor.trim()) {
       if (state.show) {
-        setState(prev => ({ ...prev, show: false }));
+        setState(prev => ({ ...prev, show: false, userClosed: false }));
       }
       return;
     }

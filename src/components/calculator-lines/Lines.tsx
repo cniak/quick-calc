@@ -117,6 +117,17 @@ function Line({
   );
 
   const handleKeyDownInternal = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Handle ESC first, even if autocomplete is not visible, to prevent any default behavior
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (autocompleteResult.handleKeyDown(e)) {
+        return;
+      }
+      // ESC was pressed but no autocomplete was showing, just prevent default
+      return;
+    }
+    
     if (autocompleteResult.handleKeyDown(e)) {
       return;
     }
@@ -204,7 +215,7 @@ function Line({
             className="bg-transparent border-none outline-none text-transparent caret-foreground relative"
             style={{ width: `${Math.max(line.expression.length, 10)}ch` }}
           />
-          {autocompleteResult.autocomplete && (
+          {autocompleteResult.autocomplete && focused && (
             <Autocomplete
               show={autocompleteResult.autocomplete.show}
               position={autocompleteResult.autocomplete.position}
@@ -217,12 +228,12 @@ function Line({
         </div>
         <span 
           className={`text-lg whitespace-nowrap font-semibold px-2 py-0.5 rounded ${
-            line.error 
+            line.error && /[+\-*/%()]/.test(line.expression)
               ? (isFirstError ? 'text-red-500 bg-red-500/10' : 'text-red-600/80 bg-red-500/5')
               : line.value !== null && !isObviousResult() ? 'text-emerald-500 bg-emerald-500/10' : ''
           }`}
         >
-          {line.error ? `// ${line.error}` : (line.value !== null && !isObviousResult()) ? `// ${formatNumber(line.value)}` : ''}
+          {line.error && /[+\-*/%()]/.test(line.expression) ? `// ${line.error}` : (line.value !== null && !isObviousResult()) ? `// ${formatNumber(line.value)}` : ''}
         </span>
       </div>
       <button
