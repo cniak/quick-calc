@@ -46,6 +46,7 @@ interface LineProps {
   scopeId: string;
   functionSets: FunctionSet[];
   onUpdate: (scopeId: string, idx: number, value: string) => void;
+  onUpdatePriority: (scopeId: string, idx: number, priority: number) => void;
   onDelete: (scopeId: string, idx: number) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => void;
   focused: boolean;
@@ -62,6 +63,7 @@ function Line({
   scopeId, 
   functionSets, 
   onUpdate, 
+  onUpdatePriority,
   onDelete, 
   onKeyDown, 
   focused, 
@@ -174,9 +176,37 @@ function Line({
     onKeyDown(e, idx);
   };
 
+  // Get priority markers to display
+  const getPriorityMarkers = () => {
+    if (line.priority === 1) return '!!';
+    if (line.priority === 2) return '!';
+    if (line.priority === 4) return '#';
+    if (line.priority === 5) return '##';
+    return '';
+  };
+  
+  // Calculate opacity based on priority
+  const getOpacityClass = () => {
+    if (line.priority === 1) return 'opacity-100'; // Highest
+    if (line.priority === 2) return 'opacity-100';
+    if (line.priority === 3) return 'opacity-100'; // Default
+    if (line.priority === 4) return 'opacity-60'; // Low
+    return 'opacity-40'; // Lowest (priority 5)
+  };
+  
+  // Get priority indicator color
+  const getPriorityColor = () => {
+    if (line.priority < 3) return 'text-red-500 font-bold'; // ! markers
+    if (line.priority > 3) return 'text-muted-foreground/40'; // # markers
+    return '';
+  };
+
   return (
-    <div className="flex items-center gap-0 py-0.5 hover:bg-secondary/50 group">
-      <span className={`select-none w-12 text-right text-base font-medium mr-2 pr-2 ${
+    <div className={`flex items-center gap-0 py-0.5 hover:bg-secondary/50 group transition-opacity ${getOpacityClass()}`}>
+      <span className={`select-none w-8 text-right text-base font-medium ${getPriorityColor()}`}>
+        {getPriorityMarkers()}
+      </span>
+      <span className={`select-none w-10 text-right text-base font-medium mr-2 pr-2 ${
         focused 
           ? 'text-blue-500' 
           : 'text-muted-foreground/60'
@@ -191,23 +221,48 @@ function Line({
             type="text"
             value={line.expression}
             onChange={(e) => {
+              const newValue = e.target.value;
+              const oldValue = line.expression;
               const cursorPos = e.target.selectionStart || 0;
-              const oldValue = e.target.value;
-              const formatted = formatExpression(oldValue);
               
-              // Calculate new cursor position after formatting
-              const beforeCursor = oldValue.substring(0, cursorPos);
-              const formattedBeforeCursor = formatExpression(beforeCursor);
-              const newCursorPos = formattedBeforeCursor.length;
+              // Detect if ! or # was typed
+              const diff = newValue.length - oldValue.length;
+              const addedChar = diff === 1 && cursorPos > 0 ? newValue[cursorPos - 1] : null;
               
-              onUpdate(scopeId, idx, formatted);
-              
-              // Restore cursor position after formatting
-              setTimeout(() => {
-                if (inputRefObj.current) {
-                  inputRefObj.current.selectionStart = inputRefObj.current.selectionEnd = newCursorPos;
+              if (addedChar === '!' || addedChar === '#') {
+                // Adjust priority
+                let newPriority = line.priority;
+                if (addedChar === '!') {
+                  newPriority = Math.max(1, line.priority - 1);
+                } else if (addedChar === '#') {
+                  newPriority = Math.min(5, line.priority + 1);
                 }
-              }, 0);
+                
+                onUpdatePriority(scopeId, idx, newPriority);
+                
+                // Keep cursor position (expression unchanged)
+                setTimeout(() => {
+                  if (inputRefObj.current) {
+                    inputRefObj.current.selectionStart = inputRefObj.current.selectionEnd = cursorPos - 1;
+                  }
+                }, 0);
+              } else {
+                // Normal editing
+                const formatted = formatExpression(newValue);
+                
+                // Calculate cursor position
+                const beforeCursor = newValue.substring(0, cursorPos);
+                const formattedBeforeCursor = formatExpression(beforeCursor);
+                const newCursorPos = formattedBeforeCursor.length;
+                
+                onUpdate(scopeId, idx, formatted);
+                
+                setTimeout(() => {
+                  if (inputRefObj.current) {
+                    inputRefObj.current.selectionStart = inputRefObj.current.selectionEnd = newCursorPos;
+                  }
+                }, 0);
+              }
             }}
             onKeyDown={handleKeyDownInternal}
             onFocus={onFocus}
@@ -248,7 +303,7 @@ function Line({
 }
 
 export function CalculatorLines() {
-  const { scopes, activeScopeId, functionSets, addLine, updateLine, deleteLine, undo } = useCalculatorStore();
+  const { scopes, activeScopeId, functionSets, addLine, updateLine, updateLinePriority, deleteLine, undo } = useCalculatorStore();
   const [focusedLineIdx, setFocusedLineIdx] = useState<number | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   
@@ -405,6 +460,7 @@ export function CalculatorLines() {
               scopeId={activeScope.id}
               functionSets={functionSets}
               onUpdate={updateLine}
+              onUpdatePriority={updateLinePriority}
               onDelete={deleteLine}
               onKeyDown={handleKeyDown}
               focused={focusedLineIdx === idx}

@@ -16,11 +16,13 @@ interface CalculatorState {
   renameScope: (id: string, name: string) => void;
   deleteScope: (id: string) => void;
   setActiveScope: (id: string) => void;
+  reorderScopes: (fromIndex: number, toIndex: number) => void;
   undo: (scopeId: string) => void;
   
   // Lines
   addLine: (scopeId: string, expression: string, index?: number) => void;
   updateLine: (scopeId: string, lineIndex: number, expression: string) => void;
+  updateLinePriority: (scopeId: string, lineIndex: number, priority: number) => void;
   deleteLine: (scopeId: string, lineIndex: number) => void;
   
   // Function Sets (Global)
@@ -59,6 +61,7 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
         value: null,
         error: null,
         dependsOn: [],
+        priority: 3,
       }],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -89,6 +92,15 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
   
   setActiveScope: (id) => {
     set({ activeScopeId: id });
+  },
+  
+  reorderScopes: (fromIndex, toIndex) => {
+    const scopes = [...get().scopes];
+    const [movedScope] = scopes.splice(fromIndex, 1);
+    scopes.splice(toIndex, 0, movedScope);
+    
+    storage.saveScopes(scopes);
+    set({ scopes });
   },
   
   undo: (scopeId) => {
@@ -134,6 +146,7 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
         expression: expression.trim(), // Store full expression for display
         value: null,
         error: null,
+        priority: 3,
         dependsOn: extractDependencies(expr),
       };
       
@@ -225,6 +238,7 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
           expression: '',
           value: null,
           error: null,
+          priority: 3,
           dependsOn: [],
         }];
       } else {
@@ -237,6 +251,21 @@ export const useCalculatorStore = create<CalculatorState>((set, get) => ({
     storage.saveScopes(scopes);
     set({ scopes });
     get().recomputeScope(scopeId);
+  },
+  
+  updateLinePriority: (scopeId, lineIndex, priority) => {
+    const scopes = get().scopes.map(scope => {
+      if (scope.id !== scopeId) return scope;
+      
+      const variables = scope.variables.map((line, idx) =>
+        idx === lineIndex ? { ...line, priority } : line
+      );
+      
+      return { ...scope, variables, updatedAt: new Date().toISOString() };
+    });
+    
+    storage.saveScopes(scopes);
+    set({ scopes });
   },
   
   addFunctionSet: (name) => {

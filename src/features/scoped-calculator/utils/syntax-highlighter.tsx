@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface Token {
-  type: 'number' | 'variable' | 'operator' | 'assignment' | 'function' | 'functionSet' | 'paren' | 'comma' | 'whitespace';
+  type: 'number' | 'variable' | 'operator' | 'assignment' | 'function' | 'functionSet' | 'paren' | 'comma' | 'whitespace' | 'priority';
   value: string;
 }
 
@@ -11,6 +11,15 @@ export function tokenize(expression: string): Token[] {
   
   while (i < expression.length) {
     const char = expression[i];
+    
+    // Priority markers (! and #) at the start
+    if (i === 0 || (tokens.length > 0 && tokens[tokens.length - 1].type === 'priority')) {
+      if (char === '!' || char === '#') {
+        tokens.push({ type: 'priority', value: char });
+        i++;
+        continue;
+      }
+    }
     
     // Whitespace
     if (/\s/.test(char)) {
@@ -123,6 +132,9 @@ export function renderHighlightedTokens(tokens: Token[]): React.ReactNode {
         break;
       case 'comma':
         className = 'text-gray-400';
+        break;
+      case 'priority':
+        className = token.value === '!' ? 'text-red-500 font-bold' : 'text-muted-foreground/40';
         break;
       case 'whitespace':
         return <span key={idx}>{token.value}</span>;

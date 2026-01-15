@@ -66,7 +66,7 @@ export function evaluateLine(
     console.log('\n📋 Final context keys:', Object.keys(funcContext));
     
     let exprToEval = line.name ? line.expression.split('=')[1].trim() : line.expression.trim();
-    console.log('📝 Original:', exprToEval);
+    console.log('📝 Expression:', exprToEval);
     
     exprToEval = exprToEval.replace(/@/g, '');
     console.log('📝 After @ removal:', exprToEval);

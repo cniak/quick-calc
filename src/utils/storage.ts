@@ -34,6 +34,14 @@ export const storage = {
           migratedFunctionSets.push(...scope.functionSets);
         }
         
+        // Migration: add priority property to variables if missing
+        if (scope.variables) {
+          scope.variables = scope.variables.map((line: any) => ({
+            ...line,
+            priority: line.priority ?? 3,
+          }));
+        }
+        
         // Remove functionSets from scope
         const { functionSets, functions, ...cleanScope } = scope;
         return cleanScope;

@@ -4,7 +4,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { ConfirmationDialog } from '@/components/confirmation-dialog/ConfirmationDialog';
 
 export function ScopeList() {
-  const { scopes, activeScopeId, createScope, deleteScope, renameScope, setActiveScope } = useCalculatorStore();
+  const { scopes, activeScopeId, createScope, deleteScope, renameScope, setActiveScope, reorderScopes } = useCalculatorStore();
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Listen for focus event from function sets
@@ -38,6 +38,8 @@ export function ScopeList() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [showNewInput, setShowNewInput] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     title: string;
@@ -60,6 +62,44 @@ export function ScopeList() {
     setEditingId(null);
   };
   
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    // Create a semi-transparent drag image
+    const target = e.currentTarget as HTMLElement;
+    const clone = target.cloneNode(true) as HTMLElement;
+    clone.style.opacity = '0.5';
+    document.body.appendChild(clone);
+    e.dataTransfer.setDragImage(clone, 0, 0);
+    setTimeout(() => document.body.removeChild(clone), 0);
+  };
+  
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (draggedIndex !== null && draggedIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
+  
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+  
+  const handleDrop = (e: React.DragEvent, toIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex !== null && draggedIndex !== toIndex) {
+      reorderScopes(draggedIndex, toIndex);
+    }
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+  
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+  
   return (
     <>
       <ConfirmationDialog
@@ -76,13 +116,27 @@ export function ScopeList() {
         className="flex items-center gap-1 bg-secondary border-b border-border px-2 py-1"
         tabIndex={0}
       >
-      {scopes.map(scope => (
+      {scopes.map((scope, index) => (
         <div
           key={scope.id}
-          className={`group flex items-center gap-2 px-4 py-2 rounded-t text-xl cursor-pointer relative ${
+          draggable={editingId !== scope.id}
+          onDragStart={(e) => handleDragStart(e, index)}
+          onDragOver={(e) => handleDragOver(e, index)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e, index)}
+          onDragEnd={handleDragEnd}
+          className={`group flex items-center gap-2 px-4 py-2 rounded-t text-xl cursor-move relative transition-all ${
             activeScopeId === scope.id 
               ? 'bg-background' 
               : 'bg-secondary hover:bg-accent'
+          } ${
+            draggedIndex === index ? 'opacity-50' : ''
+          } ${
+            dragOverIndex === index && draggedIndex !== index
+              ? draggedIndex !== null && draggedIndex < index
+                ? 'border-r-2 border-blue-500'
+                : 'border-l-2 border-blue-500'
+              : ''
           }`}
           onClick={() => setActiveScope(scope.id)}
         >

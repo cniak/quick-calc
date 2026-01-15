@@ -14,6 +14,7 @@ export type VariableLine = {
   value: number | string | boolean | null;
   error: string | null;
   dependsOn: string[];
+  priority: number; // 1-5, where 3 is default
 }
 
 export type FunctionSet = {
