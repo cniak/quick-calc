@@ -201,8 +201,19 @@ function Line({
     return '';
   };
 
+  const getBackgroundClass = () => {
+    if (line.priority === 1) return 'bg-amber-400/30'; // !! - Strong amber/gold background
+    if (line.priority === 2) return 'bg-yellow-300/20'; // ! - Lighter yellow background
+    return '';
+  };
+
+  const getTextWeightClass = () => {
+    if (line.priority === 1) return 'font-bold'; // !! - Bold text
+    return '';
+  };
+
   return (
-    <div className={`flex items-center gap-0 py-0.5 hover:bg-secondary/50 group transition-opacity ${getOpacityClass()}`}>
+    <div className={`flex items-center gap-0 py-0.5 hover:bg-secondary/50 group transition-opacity ${getOpacityClass()} ${getBackgroundClass()}`}>
       <span className={`select-none w-8 text-right text-base font-medium ${getPriorityColor()}`}>
         {getPriorityMarkers()}
       </span>
@@ -210,10 +221,10 @@ function Line({
         focused 
           ? 'text-blue-500' 
           : 'text-muted-foreground/60'
-      }`}>{idx + 1}</span>
+      } ${getTextWeightClass()}`}>{idx + 1}</span>
       <div className="flex items-center gap-2 flex-1 cursor-text" onClick={() => inputRefObj.current?.focus()}>
         <div className="relative flex items-center min-w-[10ch]">
-          <div className="absolute inset-0 pointer-events-none whitespace-pre">
+          <div className={`absolute inset-0 pointer-events-none whitespace-pre ${getTextWeightClass()}`}>
             {line.expression ? renderHighlightedTokens(tokenize(line.expression)) : ''}
           </div>
           <input
@@ -267,7 +278,7 @@ function Line({
             onKeyDown={handleKeyDownInternal}
             onFocus={onFocus}
             onBlur={onBlur}
-            className="bg-transparent border-none outline-none text-transparent caret-foreground relative"
+            className={`bg-transparent border-none outline-none text-transparent caret-foreground relative ${getTextWeightClass()}`}
             style={{ width: `${Math.max(line.expression.length, 10)}ch` }}
           />
           {autocompleteResult.autocomplete && focused && (
@@ -282,7 +293,7 @@ function Line({
           )}
         </div>
         <span 
-          className={`text-lg whitespace-nowrap font-semibold px-2 py-0.5 rounded ${
+          className={`text-lg whitespace-nowrap px-2 py-0.5 rounded ${getTextWeightClass()} ${
             line.error && /[+\-*/%()]/.test(line.expression)
               ? (isFirstError ? 'text-red-500 bg-red-500/10' : 'text-red-600/80 bg-red-500/5')
               : line.value !== null && !isObviousResult() ? 'text-emerald-500 bg-emerald-500/10' : ''
